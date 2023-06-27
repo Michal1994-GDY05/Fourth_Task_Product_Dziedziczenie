@@ -10,8 +10,9 @@ namespace Fourth_Task_Product_Dziedziczenie
     {
         string Nazwa { get; set; }
         decimal CenaNetto { get; set; }
-        string KategoriaVAT { get; }
+        decimal VAT { get; }
         decimal CenaBrutto { get; }
+        string KategoriaVAT { get; }
         string KrajPochodzenia { get; set; }
     }
 

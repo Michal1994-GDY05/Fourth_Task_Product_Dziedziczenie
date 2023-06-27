@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace Fourth_Task_Product_Dziedziczenie
 {
-    class Produkt
+    public class Produkt : IProdukt
     {
         public string Nazwa { get; set; }
+
         private decimal cenaNetto;
         public decimal CenaNetto
         {
@@ -22,51 +23,95 @@ namespace Fourth_Task_Product_Dziedziczenie
                 cenaNetto = value;
             }
         }
-        private string kategoriaVAT;
-        public string KategoriaVAT
+
+        public decimal VAT => VATDictionary[KategoriaVAT];
+        public decimal CenaBrutto => CenaNetto * (1 + VAT / 100);
+
+        private string krajPochodzenia;
+        public string KrajPochodzenia
         {
-            get { return kategoriaVAT; }
+            get => krajPochodzenia;
             set
             {
-                if (!DostepneKategorieVAT.ContainsKey(value))
-                {
-                    throw new ArgumentException("Nieprawidłowa kategoria VAT");
-                }
-                kategoriaVAT = value;
+                if (DostepneKraje.Contains(value))
+                    krajPochodzenia = value;
+                else
+                    throw new ArgumentException("Nieprawidłowy kraj pochodzenia.");
             }
         }
-        public decimal CenaBrutto => ObliczCeneBrutto();
-        public string KrajPochodzenia { get; }
 
-        private static Dictionary<string, decimal> DostepneKategorieVAT = new Dictionary<string, decimal>
+        public string KategoriaVAT { get; set; }
+
+        protected static Dictionary<string, decimal> VATDictionary = new Dictionary<string, decimal>()
     {
-        { "A", 0.23m },
-        { "B", 0.08m },
-        { "C", 0.05m },
-        { "D", 0.00m }
+        { "0%", 0 },
+        { "5%", 5 },
+        { "8%", 8 },
+        { "23%", 23 }
     };
 
-        public Produkt(string nazwa, decimal cenaNetto, string kategoriaVAT, Dictionary<string, decimal> stawkiVAT, string krajPochodzenia)
+        private static readonly HashSet<string> DostepneKraje = new HashSet<string>()
+    {
+        "Polska",
+        "Niemcy",
+        "Francja",
+        "Włochy"
+    };
+
+        public Produkt(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia)
         {
             Nazwa = nazwa;
             CenaNetto = cenaNetto;
-            WalidujKategorieVAT(kategoriaVAT, stawkiVAT);
             KategoriaVAT = kategoriaVAT;
             KrajPochodzenia = krajPochodzenia;
         }
+    }
 
-        private void WalidujKategorieVAT(string kategoriaVAT, Dictionary<string, decimal> stawkiVAT)
+        public class ProduktSpozywczy : Produkt
         {
-            if (!stawkiVAT.ContainsKey(kategoriaVAT))
-            {
-                throw new ArgumentException("Nieprawidłowa kategoria VAT");
-            }
+        public ProduktSpozywczy(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) 
+            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+        {
         }
 
-        public virtual decimal ObliczCeneBrutto()
+        public decimal VAT => VATDictionary[KategoriaVAT];
+        }
+
+        public class ProduktSpozywczyNaWage : ProduktSpozywczy
         {
-            decimal stawkaVAT = DostepneKategorieVAT[KategoriaVAT];
-            return CenaNetto * (1 + stawkaVAT);
+        public ProduktSpozywczyNaWage(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+        {
+        }
+
+        public decimal Waga { get; set; }
+        }
+
+        public class ProduktSpozywczyPaczka : ProduktSpozywczy
+        {
+        public ProduktSpozywczyPaczka(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+        {
+        }
+
+        public decimal Waga { get; set; }
+        }
+
+        public class ProduktSpozywczyNapoj<T> : ProduktSpozywczyPaczka
+        {
+        public ProduktSpozywczyNapoj(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+        {
+        }
+
+        public T Objetosc { get; set; }
+        }
+
+        public class Wielopak<T> : IWielopak<T> where T : IProdukt
+        {
+            public T Produkt { get; set; }
+            public ushort Ilosc { get; set; }
+            public decimal CenaNetto { get; set; }
+
+            public decimal CenaBrutto => Produkt.CenaNetto * Ilosc * (1 + Produkt.VAT / 100);
+            public string KategoriaVAT => Produkt.KategoriaVAT;
+            public string KrajPochodzenia => Produkt.KrajPochodzenia;
         }
     }
-}
