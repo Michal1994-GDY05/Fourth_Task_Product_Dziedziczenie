@@ -9,10 +9,11 @@ class Program
     {
         // Przykładowe użycie klas i interfejsów
         var produkt = new Produkt("Gruszka", 10.0m, "5%", "Polska");
+        var produktSpozywczy = new ProduktSpozywczy("Pomarancza", 10.0m, "23%", "Polska");
 
-        var wielopak = new Wielopak<Produkt>()
+        var wielopak = new Wielopak<ProduktSpozywczy>()
         {
-            Produkt = produkt,
+            Produkt = produktSpozywczy,
             Ilosc = 5,
             CenaNetto = 10
         };

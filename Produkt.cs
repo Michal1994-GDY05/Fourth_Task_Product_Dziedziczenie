@@ -24,7 +24,7 @@ namespace Fourth_Task_Product_Dziedziczenie
             }
         }
 
-        public decimal VAT => VATDictionary[KategoriaVAT];
+        public virtual decimal VAT => VATDictionary[KategoriaVAT];
         public decimal CenaBrutto => CenaNetto * (1 + VAT / 100);
 
         private string krajPochodzenia;
@@ -74,12 +74,13 @@ namespace Fourth_Task_Product_Dziedziczenie
         {
         }
 
-        public decimal VAT => VATDictionary[KategoriaVAT];
+        public override decimal VAT => 0;
         }
 
         public class ProduktSpozywczyNaWage : ProduktSpozywczy
         {
-        public ProduktSpozywczyNaWage(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+        public ProduktSpozywczyNaWage(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) 
+            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
         {
         }
 
@@ -88,7 +89,8 @@ namespace Fourth_Task_Product_Dziedziczenie
 
         public class ProduktSpozywczyPaczka : ProduktSpozywczy
         {
-        public ProduktSpozywczyPaczka(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+        public ProduktSpozywczyPaczka(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) 
+            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
         {
         }
 
@@ -97,7 +99,8 @@ namespace Fourth_Task_Product_Dziedziczenie
 
         public class ProduktSpozywczyNapoj<T> : ProduktSpozywczyPaczka
         {
-        public ProduktSpozywczyNapoj(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+        public ProduktSpozywczyNapoj(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) 
+            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
         {
         }
 
