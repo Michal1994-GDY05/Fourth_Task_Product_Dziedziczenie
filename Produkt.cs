@@ -70,10 +70,14 @@ namespace Fourth_Task_Product_Dziedziczenie
     public class ProduktSpozywczy : Produkt
     {
         public ProduktSpozywczy(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia, decimal kalorie)
-            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+    : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
         {
             WalidujKategoriaVAT();
             WalidujKalorie(kalorie);
+            Kalorie = kalorie;
+            Alergeny = new HashSet<string>();
+           
+          
         }
 
         //public override decimal KategoriiVAT => 0;
@@ -84,6 +88,35 @@ namespace Fourth_Task_Product_Dziedziczenie
             {
                 throw new ArgumentException("Wartość kalorii nie może być ujemna.");
             }
+        }
+
+        public HashSet<string> Alergeny { get; set; }
+
+
+        public List<string> SprawdzAlergeny()
+        {
+            var przewidywaneAlergeny = PrzewidywaneAlergeny();
+
+            foreach (var alergen in Alergeny)
+            {
+                if (!przewidywaneAlergeny.Contains(alergen))
+                {
+                    throw new ArgumentException("Nieprawidłowy alergen: " + alergen);
+                }
+            }
+            return Alergeny.ToList();
+        }
+
+
+        private static HashSet<string> PrzewidywaneAlergeny()
+        {
+            return new HashSet<string>()
+        {
+            "Orzeszki",
+            "Gluten",
+            "Mleko",
+            "Jajka"
+        };
         }
 
 
@@ -112,21 +145,38 @@ namespace Fourth_Task_Product_Dziedziczenie
         public decimal Waga { get; set; }
         }
 
-        public class ProduktSpozywczyPaczka : ProduktSpozywczy
+    public class ProduktSpozywczyPaczka : ProduktSpozywczy
+    {
+        public ProduktSpozywczyPaczka(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia, decimal kalorie, decimal waga)
+    : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia, kalorie)
         {
-        public ProduktSpozywczyPaczka(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia, decimal kalorie)
-            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia, kalorie)
-        {
+            Waga = waga;
         }
 
-        public decimal Waga { get; set; }
+        private decimal waga;
+
+        public decimal Waga
+        {
+            get { return waga; }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentException("Waga nie może być ujemna.");
+                }
+                waga = value;
+            }
         }
 
-        public class ProduktSpozywczyNapoj<T> : ProduktSpozywczyPaczka
+
+    }
+
+    public class ProduktSpozywczyNapoj<T> : ProduktSpozywczyPaczka
         {
-        public ProduktSpozywczyNapoj(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia, decimal kalorie) 
-            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia, kalorie)
+        public ProduktSpozywczyNapoj(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia, decimal kalorie, decimal waga, T objetosc)
+            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia, kalorie, waga)
         {
+            Objetosc = objetosc;
         }
 
         public T Objetosc { get; set; }
