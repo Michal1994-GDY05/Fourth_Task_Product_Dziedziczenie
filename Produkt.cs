@@ -24,8 +24,8 @@ namespace Fourth_Task_Product_Dziedziczenie
             }
         }
 
-        public virtual decimal VAT => VATDictionary[KategoriaVAT];
-        public decimal CenaBrutto => CenaNetto * (1 + VAT / 100);
+        public virtual decimal KategoriiVAT => VATDictionary[KategoriaVAT];
+        public decimal CenaBrutto => CenaNetto * (1 + KategoriiVAT / 100);
 
         private string krajPochodzenia;
         public string KrajPochodzenia
@@ -67,20 +67,45 @@ namespace Fourth_Task_Product_Dziedziczenie
         }
     }
 
-        public class ProduktSpozywczy : Produkt
-        {
-        public ProduktSpozywczy(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) 
+    public class ProduktSpozywczy : Produkt
+    {
+        public ProduktSpozywczy(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia, decimal kalorie)
             : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
         {
+            WalidujKategoriaVAT();
+            WalidujKalorie(kalorie);
         }
 
-        public override decimal VAT => 0;
+        //public override decimal KategoriiVAT => 0;
+        public decimal Kalorie { get; set; }
+        private void WalidujKalorie(decimal kalorie)
+        {
+            if (kalorie < 0)
+            {
+                throw new ArgumentException("Wartość kalorii nie może być ujemna.");
+            }
         }
+
+
+        private void WalidujKategoriaVAT()
+        {
+            HashSet<string> dostepneKategorieVAT = new HashSet<string>()
+        {
+            "0%",
+            "23%"
+        };
+
+            if (!dostepneKategorieVAT.Contains(KategoriaVAT))
+            {
+                throw new ArgumentException("Nieprawidłowa kategoria VAT dla produktu spożywczego. Dostępne wartości to 0% 23%");
+            }
+        }
+    }
 
         public class ProduktSpozywczyNaWage : ProduktSpozywczy
         {
-        public ProduktSpozywczyNaWage(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) 
-            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+        public ProduktSpozywczyNaWage(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia, decimal kalorie)
+            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia, kalorie)
         {
         }
 
@@ -89,8 +114,8 @@ namespace Fourth_Task_Product_Dziedziczenie
 
         public class ProduktSpozywczyPaczka : ProduktSpozywczy
         {
-        public ProduktSpozywczyPaczka(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) 
-            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+        public ProduktSpozywczyPaczka(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia, decimal kalorie)
+            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia, kalorie)
         {
         }
 
@@ -99,8 +124,8 @@ namespace Fourth_Task_Product_Dziedziczenie
 
         public class ProduktSpozywczyNapoj<T> : ProduktSpozywczyPaczka
         {
-        public ProduktSpozywczyNapoj(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia) 
-            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia)
+        public ProduktSpozywczyNapoj(string nazwa, decimal cenaNetto, string kategoriaVAT, string krajPochodzenia, decimal kalorie) 
+            : base(nazwa, cenaNetto, kategoriaVAT, krajPochodzenia, kalorie)
         {
         }
 
@@ -113,7 +138,7 @@ namespace Fourth_Task_Product_Dziedziczenie
             public ushort Ilosc { get; set; }
             public decimal CenaNetto { get; set; }
 
-            public decimal CenaBrutto => Produkt.CenaNetto * Ilosc * (1 + Produkt.VAT / 100);
+            public decimal CenaBrutto => Produkt.CenaNetto * Ilosc * (1 + Produkt.KategoriiVAT / 100);
             public string KategoriaVAT => Produkt.KategoriaVAT;
             public string KrajPochodzenia => Produkt.KrajPochodzenia;
         }
