@@ -29,7 +29,7 @@ namespace Fourth_Task_Product_Dziedziczenie
         }
         public string KategoriaVAT { get; set; }
         public virtual decimal KategoriiVAT => KategoriaVAT_Dictionary[KategoriaVAT];
-        
+
         private static Dictionary<string, decimal> KategoriaVAT_Dictionary = new Dictionary<string, decimal>()
         {
             { "0%", 0 },
